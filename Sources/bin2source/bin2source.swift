@@ -5,8 +5,16 @@ func bin2source(inputfile: String, outputfile: String, arrayname: String, amiga:
     if let bytes: [UInt8] = readFile(file: inputfile) {
         print(bytes)
         let url = URL(fileURLWithPath: outputfile)
-        var outfile = "const UINT8 \(arrayname)[\(bytes.count)] = {\n"
-
+        
+        var outfile = (amiga ? """
+            #include <exec/types.h>
+            const UBYTE \(arrayname)[\(bytes.count)] = {\n
+            """ : 
+            """
+            typedef unsigned char UINT8;
+            const UINT8 \(arrayname)[\(bytes.count)] = {\n
+            """)
+        
         for byte in bytes {
             outfile += "\t"+String(byte)+",\n"
         }
