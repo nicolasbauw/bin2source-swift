@@ -18,7 +18,6 @@ if (argc == 4 || argc == 5 )  {
     if (argc == 5 && argv[4]  == "--amiga") {
         amiga = true
     }
-    print(amiga)
     switch (bin2source(inputfile: argv[1], outputfile: argv[2], arrayname: argv[3], amiga: amiga)) {
         case 1: print("Can't open input file\n")
         exit(1)

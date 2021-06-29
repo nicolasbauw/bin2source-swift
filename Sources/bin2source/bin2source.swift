@@ -3,7 +3,6 @@ import Foundation
 // returns 0:OK|1:Can't open input file|2:Can't open output file
 func bin2source(inputfile: String, outputfile: String, arrayname: String, amiga: Bool) -> Int {
     if let bytes: [UInt8] = readFile(file: inputfile) {
-        print(bytes)
         let url = URL(fileURLWithPath: outputfile)
         
         var outfile = (amiga ? """
@@ -24,7 +23,7 @@ func bin2source(inputfile: String, outputfile: String, arrayname: String, amiga:
         do {
             try outfile.write(to: url, atomically: false, encoding: .utf8)
         }
-        catch { print("Error") }
+        catch { return 2 }
     } else {
         return 1
     }
@@ -34,7 +33,6 @@ func bin2source(inputfile: String, outputfile: String, arrayname: String, amiga:
 // Reads a file, returns its contents as a bytes array
 func readFile(file: String) -> [UInt8]? {
     let url = URL(fileURLWithPath: file)
-    print(url)
     do {
         // Reads the raw data from the file
         let rawdata: Data = try Data(contentsOf: url)
