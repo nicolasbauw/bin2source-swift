@@ -4,6 +4,19 @@ import Foundation
 func bin2source(inputfile: String, outputfile: String, arrayname: String, amiga: Bool) -> Int {
     if let bytes: [UInt8] = readFile(file: inputfile) {
         print(bytes)
+        let url = URL(fileURLWithPath: outputfile)
+        var outfile = "const UINT8 \(arrayname)[\(bytes.count)] = {\n"
+
+        for byte in bytes {
+            outfile += "\t"+String(byte)+",\n"
+        }
+
+        outfile += "};\n"
+
+        do {
+            try outfile.write(to: url, atomically: false, encoding: .utf8)
+        }
+        catch { print("Error") }
     } else {
         return 1
     }
