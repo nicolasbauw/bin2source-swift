@@ -18,15 +18,17 @@ if (argc == 4 || argc == 5 )  {
     if (argc == 5 && argv[4]  == "--amiga") {
         amiga = true
     }
-    switch (bin2source(inputfile: argv[1], outputfile: argv[2], arrayname: argv[3], amiga: amiga)) {
-        case 1: print("Can't open input file\n")
-        exit(1)
-
-        case 2: print("Can't open output file\n")
-        exit(2)
-
-        default: exit(0)
+    do {
+        try bin2source(inputfile: argv[1], outputfile: argv[2], arrayname: argv[3], amiga: amiga)
+        exit(0)
     }
+    catch IoError.readFile { print("Can't open input file\n")
+        exit(1)
+    }
+    catch IoError.writeFile {print("Can't open output file\n")
+        exit(2)
+    }
+
 }
 else {
     print(HELP)

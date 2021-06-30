@@ -1,10 +1,14 @@
 import Foundation
 
-// returns 0:OK|1:Can't open input file|2:Can't open output file
-func bin2source(inputfile: String, outputfile: String, arrayname: String, amiga: Bool) -> Int {
+enum IoError: Error {
+    case readFile
+    case writeFile
+}
+
+// writes the C source from a binary file
+func bin2source(inputfile: String, outputfile: String, arrayname: String, amiga: Bool) throws {
     if let bytes: [UInt8] = readFile(file: inputfile) {
         let url = URL(fileURLWithPath: outputfile)
-        
         var outfile = (amiga ? """
             #include <exec/types.h>
             const UBYTE \(arrayname)[\(bytes.count)] = {\n
@@ -17,29 +21,21 @@ func bin2source(inputfile: String, outputfile: String, arrayname: String, amiga:
         for byte in bytes {
             outfile += "\t"+String(byte)+",\n"
         }
-
         outfile += "};\n"
 
         do {
             try outfile.write(to: url, atomically: false, encoding: .utf8)
         }
-        catch { return 2 }
+        catch { throw IoError.writeFile }       // Can't write the file
     } else {
-        return 1
+        throw IoError.readFile                  // Can't read the file
     }
-    return 0
 }
 
-// Reads a file, returns its contents as a bytes array
+// Reads the raw data from a file and returns an array of bytes
 func readFile(file: String) -> [UInt8]? {
     let url = URL(fileURLWithPath: file)
-    do {
-        // Reads the raw data from the file
-        let rawdata: Data = try Data(contentsOf: url)
-        // Returns the raw data as an array of bytes
-        return [UInt8](rawdata)
-    } catch {
-        // Can't read the file
-        return nil
-    }
+    
+    if let rawdata: Data = try? Data(contentsOf: url) { return [UInt8](rawdata) }
+    return nil          // Can't read the file
 }
